@@ -1,26 +1,256 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   Influenz Hub — design tokens
+   Palette is fixed by docs/STYLE.md; the system around it is documented in
+   docs/DESIGN.md. Editorial and spacious: type and space carry the design,
+   purple punctuates rather than fills.
+   ========================================================================== */
+
+@theme {
+  /* --- Brand (docs/STYLE.md §4) --- */
+  --color-purple: #7c3aed;
+  --color-violet: #a855f7;
+  --color-lavender: #e9d5ff;
+
+  /* --- Surfaces ---
+     Elevation is discrete steps of lightness, not stacked transparency, so
+     nested surfaces stay legible and predictable. */
+  --color-ground: #09090b;
+  --color-surface-1: #101013;
+  --color-surface-2: #17171b;
+  --color-surface-3: #1e1e23;
+  --color-line: #26262c;
+  --color-line-strong: #35353d;
+
+  /* --- Text ramp (all ≥4.5:1 on --color-ground) --- */
+  --color-ink: #fafafa;
+  --color-ink-muted: #a1a1aa;
+  --color-ink-subtle: #85858e;
+
+  --color-danger: #f87171;
+  --color-success: #4ade80;
+
+  /* --- Type ---
+     Display sizes are fluid so headlines stay proportionate without a
+     breakpoint for every step. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), sans-serif;
+
+  --text-display-xl: clamp(2.75rem, 1.5rem + 5.2vw, 5.25rem);
+  --text-display-xl--line-height: 0.98;
+  --text-display-xl--letter-spacing: -0.035em;
+  --text-display-xl--font-weight: 700;
+
+  --text-display-lg: clamp(2.125rem, 1.3rem + 3.4vw, 3.5rem);
+  --text-display-lg--line-height: 1.04;
+  --text-display-lg--letter-spacing: -0.03em;
+  --text-display-lg--font-weight: 700;
+
+  --text-display-md: clamp(1.625rem, 1.2rem + 1.9vw, 2.25rem);
+  --text-display-md--line-height: 1.12;
+  --text-display-md--letter-spacing: -0.02em;
+  --text-display-md--font-weight: 650;
+
+  --text-display-sm: clamp(1.25rem, 1.05rem + 0.8vw, 1.5rem);
+  --text-display-sm--line-height: 1.2;
+  --text-display-sm--letter-spacing: -0.015em;
+  --text-display-sm--font-weight: 600;
+
+  /* Deck: the paragraph that follows a headline. */
+  --text-deck: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  --text-deck--line-height: 1.6;
+
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.12em;
+  --text-eyebrow--font-weight: 600;
+
+  /* --- Radius (docs/STYLE.md §6) --- */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+
+  /* --- Section rhythm --- */
+  --spacing-section: clamp(4rem, 2rem + 8vw, 10rem);
+  --spacing-gutter: clamp(1.25rem, 0.5rem + 3vw, 2.5rem);
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--color-purple);
+  color: #fff;
+}
+
+/* A single visible focus treatment everywhere — on a near-black ground a
+   default outline is easy to lose, so we use the brand violet plus an offset. */
+:focus-visible {
+  outline: 2px solid var(--color-violet);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-ground); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-3);
+  border-radius: 999px;
+  border: 2px solid var(--color-ground);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-line-strong); }
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+@utility container-page {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: var(--spacing-gutter);
+}
+
+/* Measure — body copy stays readable instead of running the full width. */
+@utility measure {
+  max-width: 68ch;
+}
+
+@utility measure-tight {
+  max-width: 46ch;
+}
+
+@utility eyebrow {
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--text-eyebrow--letter-spacing);
+  font-weight: var(--text-eyebrow--font-weight);
+  text-transform: uppercase;
+  color: var(--color-lavender);
+}
+
+/* Surface: the default panel. Deliberately flat — depth comes from the
+   lightness step and a hairline, not from a heavy shadow. */
+@utility surface {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-line);
+}
+
+@utility surface-raised {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+}
+
+/* Glass is reserved for elements that float over imagery (STYLE.md §7),
+   not applied to every card. */
+@utility glass {
+  background: color-mix(in oklab, var(--color-surface-2) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid color-mix(in oklab, var(--color-lavender) 12%, transparent);
+}
+
+@utility gradient-brand {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-purple) 0%,
+    var(--color-violet) 100%
+  );
+}
+
+/* Text set in the brand gradient — used once per page at most. */
+@utility text-gradient-brand {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-ink) 30%,
+    var(--color-lavender) 65%,
+    var(--color-violet) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The one ambient glow, used behind the hero. */
+@utility glow-ambient {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.5;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-purple) 70%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+/* Hairline rules that fade out — softer than a full-width border. */
+@utility rule-fade {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, var(--color-line-strong), transparent);
+}
+
+@utility card-interactive {
+  transition:
+    border-color 220ms var(--ease-out-soft),
+    background-color 220ms var(--ease-out-soft),
+    transform 220ms var(--ease-out-soft);
+}
+
+@utility image-fill {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* ==========================================================================
+   Motion — every animation here is opt-out via prefers-reduced-motion
+   ========================================================================== */
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@utility animate-rise {
+  animation: rise-in 600ms var(--ease-out-soft) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
