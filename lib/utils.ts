@@ -6,14 +6,24 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** ISO 4217 code for the West African CFA franc. */
+export const CURRENCY = "XOF";
+export const CURRENCY_LABEL = "F CFA";
+
+/**
+ * The CFA franc has no subunit in circulation, so prices are always whole
+ * numbers — formatting with decimals would imply a precision that doesn't
+ * exist. `fr-FR` is used because that's how amounts are written across the
+ * CFA zone: `25 000 F CFA`, space-separated, symbol last.
+ */
 export function formatPrice(value: string | number | null | undefined) {
   if (value === null || value === undefined || value === "") return null;
   const num = typeof value === "number" ? value : Number.parseFloat(value);
   if (Number.isNaN(num)) return null;
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("fr-FR", {
     style: "currency",
-    currency: "USD",
-    maximumFractionDigits: num % 1 === 0 ? 0 : 2,
+    currency: CURRENCY,
+    maximumFractionDigits: 0,
   }).format(num);
 }
 

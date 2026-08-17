@@ -15,6 +15,7 @@ import {
   type FormState,
 } from "@/lib/api/business-actions";
 import type { Category, MyStore, ProductCard, ServiceCard } from "@/lib/api/types";
+import { CURRENCY_LABEL } from "@/lib/utils";
 
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
@@ -162,12 +163,12 @@ export function ProductDialog({
           </Field>
 
           <div className="grid gap-5 sm:grid-cols-3">
-            <Field label="Price (USD)" htmlFor="product-price" error={errors.price}>
+            <Field label={`Price (${CURRENCY_LABEL})`} htmlFor="product-price" error={errors.price}>
               <Input
                 id="product-price"
                 name="price"
                 type="number"
-                step="0.01"
+                step="1"
                 min="0"
                 defaultValue={product?.price ?? ""}
                 required
@@ -264,21 +265,23 @@ export function ServiceDialog({
           </Field>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="From (USD)" htmlFor="service-min">
+            <Field label={`From (${CURRENCY_LABEL})`} htmlFor="service-min">
               <Input
                 id="service-min"
                 name="priceMin"
                 type="number"
+                step="1"
                 min="0"
                 defaultValue={service?.priceMin ?? ""}
               />
             </Field>
 
-            <Field label="To (USD)" htmlFor="service-max" error={errors.priceMax}>
+            <Field label={`To (${CURRENCY_LABEL})`} htmlFor="service-max" error={errors.priceMax}>
               <Input
                 id="service-max"
                 name="priceMax"
                 type="number"
+                step="1"
                 min="0"
                 defaultValue={service?.priceMax ?? ""}
               />
